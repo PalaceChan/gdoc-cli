@@ -1,0 +1,18 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# OAuth credentials and tokens must stay outside the repo, but ignore them here too
+# in case a developer points config paths at the project during testing.
+oauth_client.json
+token.json
+client_secret*.json
+
+# Local build/test artifacts
+.coverage
+.pytest_cache/
+dist/
+build/
+*.egg-info/

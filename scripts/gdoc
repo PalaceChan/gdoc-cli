@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+exec /home/avelazqu/.local/venvs/gdoc-cli/bin/python -m gdoc_cli.main "$@"
