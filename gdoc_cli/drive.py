@@ -24,6 +24,11 @@ def _escape_drive_query_value(value: str) -> str:
     return value.replace("\\", "\\\\").replace("'", "\\'")
 
 
+def doc_url(doc_id: str) -> str:
+    """Return the standard Google Docs edit URL for a document ID."""
+    return DOC_URL_TEMPLATE.format(doc_id=doc_id)
+
+
 def search_docs(query: str, *, page_size: int = 20, full_text: bool = False) -> list[dict[str, str]]:
     """Search Google Docs visible to the authenticated user.
 
@@ -63,6 +68,32 @@ def search_docs(query: str, *, page_size: int = 20, full_text: bool = False) -> 
             }
         )
     return docs
+
+
+def share_doc(doc_id: str, email: str, role: str) -> dict[str, str]:
+    """Share a Google Doc with a user email address."""
+    permission = (
+        drive_service()
+        .permissions()
+        .create(
+            fileId=doc_id,
+            body={
+                "type": "user",
+                "role": role,
+                "emailAddress": email,
+            },
+            sendNotificationEmail=True,
+            fields="id,emailAddress,role,type",
+        )
+        .execute()
+    )
+    return {
+        "doc_id": doc_id,
+        "email": permission.get("emailAddress", email),
+        "role": permission.get("role", role),
+        "permission_id": permission.get("id", ""),
+        "url": doc_url(doc_id),
+    }
 
 
 def print_jsonl(rows: Iterable[dict[str, object]]) -> None:
