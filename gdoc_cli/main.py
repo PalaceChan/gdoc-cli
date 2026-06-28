@@ -13,7 +13,7 @@ from pathlib import Path
 from gdoc_cli.auth import get_credentials, print_auth_status
 from gdoc_cli.config import OAUTH_CLIENT_FILE, TOKEN_FILE
 from gdoc_cli.docs import append_doc, create_doc, read_body_file
-from gdoc_cli.drive import export_doc, print_jsonl, search_docs, share_doc
+from gdoc_cli.drive import doc_info, doc_permissions, export_doc, print_jsonl, search_docs, share_doc
 
 
 ROLES = ("reader", "commenter", "writer")
@@ -42,6 +42,12 @@ def build_parser() -> argparse.ArgumentParser:
     search_parser.add_argument("query", help="search query")
     search_parser.add_argument("--limit", type=int, default=20, help="maximum results to return")
     search_parser.add_argument("--full-text", action="store_true", help="search document contents instead of titles")
+
+    info_parser = subparsers.add_parser("info", help="print Google Doc metadata as JSON")
+    info_parser.add_argument("--doc-id", required=True, help="Google Doc ID")
+
+    permissions_parser = subparsers.add_parser("permissions", help="print Google Doc permissions as JSON Lines")
+    permissions_parser.add_argument("--doc-id", required=True, help="Google Doc ID")
 
     create_parser = subparsers.add_parser("create", help="create a Google Doc")
     create_parser.add_argument("--title", required=True, help="document title")
@@ -83,6 +89,14 @@ def main() -> int:
         if args.limit < 1:
             parser.error("--limit must be at least 1")
         print_jsonl(search_docs(args.query, page_size=args.limit, full_text=args.full_text))
+        return 0
+
+    if args.command == "info":
+        print(json.dumps(doc_info(args.doc_id), sort_keys=True, ensure_ascii=False))
+        return 0
+
+    if args.command == "permissions":
+        print_jsonl(doc_permissions(args.doc_id))
         return 0
 
     if args.command == "create":

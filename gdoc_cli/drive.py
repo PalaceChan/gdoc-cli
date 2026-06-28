@@ -35,6 +35,54 @@ def doc_url(doc_id: str) -> str:
     return DOC_URL_TEMPLATE.format(doc_id=doc_id)
 
 
+def doc_info(doc_id: str) -> dict[str, str]:
+    """Return basic metadata for a Google Doc."""
+    metadata = (
+        drive_service()
+        .files()
+        .get(
+            fileId=doc_id,
+            fields="id,name,mimeType,modifiedTime,createdTime,webViewLink,owners(emailAddress,displayName)",
+        )
+        .execute()
+    )
+    return {
+        "id": metadata.get("id", doc_id),
+        "name": metadata.get("name", ""),
+        "url": metadata.get("webViewLink") or doc_url(doc_id),
+        "mimeType": metadata.get("mimeType", ""),
+        "createdTime": metadata.get("createdTime", ""),
+        "modifiedTime": metadata.get("modifiedTime", ""),
+        "owners": metadata.get("owners", []),
+    }
+
+
+def doc_permissions(doc_id: str) -> list[dict[str, str]]:
+    """Return non-secret permissions for a Google Doc."""
+    response = (
+        drive_service()
+        .permissions()
+        .list(
+            fileId=doc_id,
+            fields="permissions(id,type,emailAddress,displayName,role,deleted)",
+        )
+        .execute()
+    )
+    permissions = []
+    for permission in response.get("permissions", []):
+        permissions.append(
+            {
+                "id": permission.get("id", ""),
+                "type": permission.get("type", ""),
+                "emailAddress": permission.get("emailAddress", ""),
+                "displayName": permission.get("displayName", ""),
+                "role": permission.get("role", ""),
+                "deleted": permission.get("deleted", False),
+            }
+        )
+    return permissions
+
+
 def search_docs(query: str, *, page_size: int = 20, full_text: bool = False) -> list[dict[str, str]]:
     """Search Google Docs visible to the authenticated user.
 

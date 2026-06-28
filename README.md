@@ -10,6 +10,8 @@ This project is intended to support a simple skill-driven workflow for native Go
 
 - `gdoc auth` — complete Google OAuth and save a local token
 - `gdoc search QUERY` — find Google Docs by title and print JSON Lines
+- `gdoc info --doc-id DOC_ID` — print Google Doc metadata as JSON
+- `gdoc permissions --doc-id DOC_ID` — print Google Doc permissions as JSON Lines
 - `gdoc create --title TITLE --body-file FILE` — create a Google Doc and print JSON
 - `gdoc append --doc-id DOC_ID --body-file FILE` — append plain text to an existing doc and print JSON
 - `gdoc share --doc-id DOC_ID --email EMAIL --role reader|commenter|writer` — share a doc and print JSON
@@ -67,6 +69,15 @@ gdoc search "action item" --full-text --limit 5
 ```
 
 By default, search matches document titles. Use `--full-text` to ask Drive to search document contents instead. Each result is printed as one JSON object per line with the document ID, name, URL, MIME type, and modified time.
+
+## Inspect docs
+
+```bash
+gdoc info --doc-id DOC_ID
+gdoc permissions --doc-id DOC_ID
+```
+
+`info` prints one JSON object with document metadata. `permissions` prints one JSON object per line with non-secret permission fields.
 
 ## Create docs
 
