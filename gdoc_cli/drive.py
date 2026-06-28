@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterable
+from pathlib import Path
 
 from googleapiclient.discovery import build
 
@@ -12,6 +13,11 @@ from gdoc_cli.auth import get_credentials
 
 DOCS_MIME_TYPE = "application/vnd.google-apps.document"
 DOC_URL_TEMPLATE = "https://docs.google.com/document/d/{doc_id}/edit"
+EXPORT_MIME_TYPES = {
+    "pdf": "application/pdf",
+    "txt": "text/plain",
+    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+}
 
 
 def drive_service():
@@ -93,6 +99,20 @@ def share_doc(doc_id: str, email: str, role: str) -> dict[str, str]:
         "role": permission.get("role", role),
         "permission_id": permission.get("id", ""),
         "url": doc_url(doc_id),
+    }
+
+
+def export_doc(doc_id: str, export_format: str, output: Path) -> dict[str, object]:
+    """Export a Google Doc to a local file."""
+    mime_type = EXPORT_MIME_TYPES[export_format]
+    data = drive_service().files().export(fileId=doc_id, mimeType=mime_type).execute()
+    output.write_bytes(data)
+    return {
+        "doc_id": doc_id,
+        "format": export_format,
+        "mime_type": mime_type,
+        "output": str(output),
+        "bytes": len(data),
     }
 
 

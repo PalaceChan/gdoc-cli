@@ -13,7 +13,7 @@ This project is intended to support a simple skill-driven workflow for native Go
 - `gdoc create --title TITLE --body-file FILE` — create a Google Doc and print JSON
 - `gdoc append --doc-id DOC_ID --body-file FILE` — append plain text to an existing doc and print JSON
 - `gdoc share --doc-id DOC_ID --email EMAIL --role reader|commenter|writer` — share a doc and print JSON
-- `gdoc export --doc-id DOC_ID --format pdf --output FILE` — export a doc
+- `gdoc export --doc-id DOC_ID --format pdf|txt|docx --output FILE` — export a doc and print JSON
 - `gdoc open --doc-id DOC_ID` — print the browser URL
 
 ## Install locally
@@ -93,6 +93,16 @@ gdoc append --doc-id DOC_ID --body-file notes.txt
 ```
 
 The body file is appended as plain text. The command prints one JSON object with the document ID, URL, and appended character count.
+
+## Export docs
+
+```bash
+gdoc export --doc-id DOC_ID --format pdf --output doc.pdf
+gdoc export --doc-id DOC_ID --format txt --output doc.txt
+gdoc export --doc-id DOC_ID --format docx --output doc.docx
+```
+
+The output parent directory must already exist. The command prints one JSON object with the document ID, format, MIME type, output path, and byte count.
 
 ## License
 

@@ -13,7 +13,7 @@ from pathlib import Path
 from gdoc_cli.auth import get_credentials, print_auth_status
 from gdoc_cli.config import OAUTH_CLIENT_FILE, TOKEN_FILE
 from gdoc_cli.docs import append_doc, create_doc, read_body_file
-from gdoc_cli.drive import print_jsonl, search_docs, share_doc
+from gdoc_cli.drive import export_doc, print_jsonl, search_docs, share_doc
 
 
 ROLES = ("reader", "commenter", "writer")
@@ -101,6 +101,14 @@ def main() -> int:
             parser.error(f"--body-file does not exist or is not a file: {args.body_file}")
         body = read_body_file(args.body_file)
         print(json.dumps(append_doc(args.doc_id, body), sort_keys=True, ensure_ascii=False))
+        return 0
+
+    if args.command == "export":
+        if args.output.exists() and args.output.is_dir():
+            parser.error(f"--output is a directory: {args.output}")
+        if not args.output.parent.exists():
+            parser.error(f"output parent directory does not exist: {args.output.parent}")
+        print(json.dumps(export_doc(args.doc_id, args.format, args.output), sort_keys=True, ensure_ascii=False))
         return 0
 
     if args.command == "open":
