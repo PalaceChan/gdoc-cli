@@ -11,7 +11,7 @@ This project is intended to support a simple skill-driven workflow for native Go
 - `gdoc auth` — complete Google OAuth and save a local token
 - `gdoc search QUERY` — find Google Docs by title and print JSON Lines
 - `gdoc create --title TITLE --body-file FILE` — create a Google Doc and print JSON
-- `gdoc append --doc-id DOC_ID --body-file FILE` — append text to an existing doc
+- `gdoc append --doc-id DOC_ID --body-file FILE` — append plain text to an existing doc and print JSON
 - `gdoc share --doc-id DOC_ID --email EMAIL --role reader|commenter|writer` — share a doc and print JSON
 - `gdoc export --doc-id DOC_ID --format pdf --output FILE` — export a doc
 - `gdoc open --doc-id DOC_ID` — print the browser URL
@@ -85,6 +85,14 @@ gdoc share --doc-id DOC_ID --email person@example.com --role writer
 ```
 
 The command sends Google's normal sharing notification and prints one JSON object with the document ID, recipient email, role, permission ID, and URL.
+
+## Append to docs
+
+```bash
+gdoc append --doc-id DOC_ID --body-file notes.txt
+```
+
+The body file is appended as plain text. The command prints one JSON object with the document ID, URL, and appended character count.
 
 ## License
 
