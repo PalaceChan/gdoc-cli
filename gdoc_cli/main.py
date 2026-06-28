@@ -7,10 +7,12 @@ work will add Google OAuth and Docs/Drive API operations behind these commands.
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 from gdoc_cli.auth import get_credentials, print_auth_status
 from gdoc_cli.config import OAUTH_CLIENT_FILE, TOKEN_FILE
+from gdoc_cli.docs import create_doc, read_body_file
 from gdoc_cli.drive import print_jsonl, search_docs
 
 
@@ -81,6 +83,13 @@ def main() -> int:
         if args.limit < 1:
             parser.error("--limit must be at least 1")
         print_jsonl(search_docs(args.query, page_size=args.limit, full_text=args.full_text))
+        return 0
+
+    if args.command == "create":
+        if args.body_file and not args.body_file.is_file():
+            parser.error(f"--body-file does not exist or is not a file: {args.body_file}")
+        body = read_body_file(args.body_file)
+        print(json.dumps(create_doc(args.title, body), sort_keys=True, ensure_ascii=False))
         return 0
 
     if args.command == "open":

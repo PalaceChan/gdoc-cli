@@ -10,7 +10,7 @@ This project is intended to support a simple skill-driven workflow for native Go
 
 - `gdoc auth` — complete Google OAuth and save a local token
 - `gdoc search QUERY` — find Google Docs by title and print JSON Lines
-- `gdoc create --title TITLE --body-file FILE` — create a Google Doc
+- `gdoc create --title TITLE --body-file FILE` — create a Google Doc and print JSON
 - `gdoc append --doc-id DOC_ID --body-file FILE` — append text to an existing doc
 - `gdoc share --doc-id DOC_ID --email EMAIL --role reader|commenter|writer` — share a doc
 - `gdoc export --doc-id DOC_ID --format pdf --output FILE` — export a doc
@@ -67,6 +67,14 @@ gdoc search "action item" --full-text --limit 5
 ```
 
 By default, search matches document titles. Use `--full-text` to ask Drive to search document contents instead. Each result is printed as one JSON object per line with the document ID, name, URL, MIME type, and modified time.
+
+## Create docs
+
+```bash
+gdoc create --title "Meeting Notes" --body-file notes.txt
+```
+
+The body file is inserted as plain text. The command prints one JSON object with the created document ID, name, URL, MIME type, and modified time.
 
 ## License
 
