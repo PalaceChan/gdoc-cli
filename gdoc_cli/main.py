@@ -11,6 +11,7 @@ from pathlib import Path
 
 from gdoc_cli.auth import get_credentials, print_auth_status
 from gdoc_cli.config import OAUTH_CLIENT_FILE, TOKEN_FILE
+from gdoc_cli.drive import print_jsonl, search_docs
 
 
 ROLES = ("reader", "commenter", "writer")
@@ -37,6 +38,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     search_parser = subparsers.add_parser("search", help="search Google Docs")
     search_parser.add_argument("query", help="search query")
+    search_parser.add_argument("--limit", type=int, default=20, help="maximum results to return")
+    search_parser.add_argument("--full-text", action="store_true", help="search document contents instead of titles")
 
     create_parser = subparsers.add_parser("create", help="create a Google Doc")
     create_parser.add_argument("--title", required=True, help="document title")
@@ -72,6 +75,12 @@ def main() -> int:
             return 0
         get_credentials(allow_browser=True)
         print(f"Authenticated. Token saved to {TOKEN_FILE}")
+        return 0
+
+    if args.command == "search":
+        if args.limit < 1:
+            parser.error("--limit must be at least 1")
+        print_jsonl(search_docs(args.query, page_size=args.limit, full_text=args.full_text))
         return 0
 
     if args.command == "open":

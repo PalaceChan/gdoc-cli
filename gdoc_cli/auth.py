@@ -15,6 +15,7 @@ from gdoc_cli.config import OAUTH_CLIENT_FILE, TOKEN_FILE, ensure_config_dir
 SCOPES = (
     "https://www.googleapis.com/auth/documents",
     "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/drive.readonly",
 )
 
 
@@ -27,7 +28,7 @@ def load_credentials() -> Credentials | None:
     """Load saved credentials if present."""
     if not TOKEN_FILE.exists():
         return None
-    return Credentials.from_authorized_user_file(str(TOKEN_FILE), SCOPES)
+    return Credentials.from_authorized_user_file(str(TOKEN_FILE))
 
 
 def save_credentials(credentials: Credentials) -> None:
@@ -38,6 +39,11 @@ def save_credentials(credentials: Credentials) -> None:
         TOKEN_FILE.chmod(0o600)
     except PermissionError:
         pass
+
+
+def has_required_scopes(credentials: Credentials | None) -> bool:
+    """Return whether credentials include every required OAuth scope."""
+    return bool(credentials and credentials.has_scopes(SCOPES))
 
 
 def get_credentials(*, allow_browser: bool = False) -> Credentials:
@@ -55,16 +61,16 @@ def get_credentials(*, allow_browser: bool = False) -> Credentials:
     """
     credentials = load_credentials()
 
-    if credentials and credentials.valid:
+    if credentials and credentials.valid and has_required_scopes(credentials):
         return credentials
 
-    if credentials and credentials.expired and credentials.refresh_token:
+    if credentials and credentials.expired and credentials.refresh_token and has_required_scopes(credentials):
         credentials.refresh(Request())
         save_credentials(credentials)
         return credentials
 
     if not allow_browser:
-        raise RuntimeError("Not authenticated. Run `gdoc auth` first.")
+        raise RuntimeError("Not authenticated with required scopes. Run `gdoc auth` first.")
 
     if not OAUTH_CLIENT_FILE.exists():
         raise FileNotFoundError(
@@ -88,6 +94,7 @@ def auth_status() -> dict[str, object]:
         "token_file": str(TOKEN_FILE),
         "token_exists": TOKEN_FILE.exists(),
         "token_valid": bool(credentials and credentials.valid),
+        "token_has_required_scopes": has_required_scopes(credentials),
         "scopes": list(SCOPES),
     }
 

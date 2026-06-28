@@ -9,7 +9,7 @@ This project is intended to support a simple skill-driven workflow for native Go
 ## Planned commands
 
 - `gdoc auth` — complete Google OAuth and save a local token
-- `gdoc search QUERY` — find Google Docs by title/text query
+- `gdoc search QUERY` — find Google Docs by title and print JSON Lines
 - `gdoc create --title TITLE --body-file FILE` — create a Google Doc
 - `gdoc append --doc-id DOC_ID --body-file FILE` — append text to an existing doc
 - `gdoc share --doc-id DOC_ID --email EMAIL --role reader|commenter|writer` — share a doc
@@ -32,7 +32,7 @@ gdoc --help
 
 ## OAuth setup
 
-Create a Google OAuth Desktop client with access to the Google Docs API and Google Drive API. Save the downloaded client JSON here:
+Create a Google OAuth Desktop client with access to the Google Docs API and Google Drive API. The CLI requests Docs access, app-file Drive access, and read-only Drive access for searching/exporting existing docs. Save the downloaded client JSON here:
 
 ```text
 ~/.config/gdoc-cli/oauth_client.json
@@ -57,6 +57,16 @@ gdoc auth --status
 ```
 
 Do not commit OAuth client secrets or tokens.
+
+## Search docs
+
+```bash
+gdoc search "meeting notes"
+gdoc search "proposal" --limit 5
+gdoc search "action item" --full-text --limit 5
+```
+
+By default, search matches document titles. Use `--full-text` to ask Drive to search document contents instead. Each result is printed as one JSON object per line with the document ID, name, URL, MIME type, and modified time.
 
 ## License
 
