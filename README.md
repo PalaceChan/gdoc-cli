@@ -32,6 +32,10 @@ Make sure `~/.local/bin` is on `PATH`, then verify:
 gdoc --help
 ```
 
+## Skill
+
+`SKILL.md` contains concise agent usage guidance. Keep command details in `gdoc --help` and subcommand help to avoid documentation drift.
+
 ## OAuth setup
 
 Create a Google OAuth Desktop client with access to the Google Docs API and Google Drive API. The CLI requests Docs access, app-file Drive access, and read-only Drive access for searching/exporting existing docs. Save the downloaded client JSON here:

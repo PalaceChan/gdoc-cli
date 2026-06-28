@@ -8,8 +8,9 @@ The CLI should pair cleanly with a separate skill file by exposing predictable, 
 
 ## Important files
 
-- `gdoc_cli/main.py` — command-line entry point and argument parsing.
+- `gdoc_cli/main.py` — command-line entry point and argument parsing; CLI help is the command source of truth.
 - `scripts/gdoc` — local wrapper intended to be symlinked into `~/.local/bin/gdoc`.
+- `SKILL.md` — concise agent workflow guidance; avoid duplicating full CLI command docs here.
 - `requirements.txt` — Python dependencies for the local virtual environment.
 - `README.md` — short install and usage overview.
 
@@ -25,13 +26,15 @@ The CLI should pair cleanly with a separate skill file by exposing predictable, 
 
 - `gdoc auth`
 - `gdoc search QUERY`
+- `gdoc info --doc-id DOC_ID`
+- `gdoc permissions --doc-id DOC_ID`
 - `gdoc create --title TITLE --body-file FILE`
 - `gdoc append --doc-id DOC_ID --body-file FILE`
 - `gdoc share --doc-id DOC_ID --email EMAIL --role reader|commenter|writer`
-- `gdoc export --doc-id DOC_ID --format pdf --output FILE`
+- `gdoc export --doc-id DOC_ID --format pdf|txt|docx --output FILE`
 - `gdoc open --doc-id DOC_ID`
 
-If this surface changes, update both `README.md` and the future `SKILL.md` together.
+If this surface changes, update CLI help, `README.md`, and `SKILL.md` together. Keep `SKILL.md` focused on agent workflow and guardrails, not duplicated command reference.
 
 ## Implementation notes
 
