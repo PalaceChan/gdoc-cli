@@ -9,6 +9,9 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from gdoc_cli.auth import get_credentials, print_auth_status
+from gdoc_cli.config import OAUTH_CLIENT_FILE, TOKEN_FILE
+
 
 ROLES = ("reader", "commenter", "writer")
 EXPORT_FORMATS = ("pdf", "txt", "docx")
@@ -21,7 +24,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    subparsers.add_parser("auth", help="complete Google OAuth and save a local token")
+    auth_parser = subparsers.add_parser(
+        "auth",
+        help="complete Google OAuth and save a local token",
+        description=(
+            "Complete browser-based Google OAuth. Save the downloaded OAuth "
+            f"Desktop client JSON at {OAUTH_CLIENT_FILE} before running this command. "
+            f"The resulting token is saved at {TOKEN_FILE}."
+        ),
+    )
+    auth_parser.add_argument("--status", action="store_true", help="print secret-free auth status and exit")
 
     search_parser = subparsers.add_parser("search", help="search Google Docs")
     search_parser.add_argument("query", help="search query")
@@ -53,6 +65,14 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
+
+    if args.command == "auth":
+        if args.status:
+            print_auth_status()
+            return 0
+        get_credentials(allow_browser=True)
+        print(f"Authenticated. Token saved to {TOKEN_FILE}")
+        return 0
 
     if args.command == "open":
         print(f"https://docs.google.com/document/d/{args.doc_id}/edit")

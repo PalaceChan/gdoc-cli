@@ -30,13 +30,30 @@ Make sure `~/.local/bin` is on `PATH`, then verify:
 gdoc --help
 ```
 
-## OAuth files
+## OAuth setup
 
-Runtime OAuth files should live outside the repo, for example:
+Create a Google OAuth Desktop client with access to the Google Docs API and Google Drive API. Save the downloaded client JSON here:
 
 ```text
 ~/.config/gdoc-cli/oauth_client.json
+```
+
+Then run:
+
+```bash
+gdoc auth
+```
+
+The resulting token is saved here:
+
+```text
 ~/.config/gdoc-cli/token.json
+```
+
+Check setup without printing secrets:
+
+```bash
+gdoc auth --status
 ```
 
 Do not commit OAuth client secrets or tokens.
